@@ -2003,6 +2003,7 @@
     <div id="count"></div>
     <script src="https://unpkg.com/popper.js@1"></script>
     <script src="https://unpkg.com/tippy.js@4"></script>
+    <script data-main="require-main" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.16/require.js"></script>
     <script type="text/javascript">
       function toggleCountry(e) {
         let node = e.target;
@@ -2053,6 +2054,19 @@
       });
 
       updateCount();
+
+      require.config({
+        paths: {
+          'svg-pan-zoom': './dist/svg-pan-zoom'
+        }
+      });
+
+      require(["svg-pan-zoom"], function(svgPanZoom) {
+        svgPanZoom('#svg', {
+          zoomEnabled: true,
+          controlIconsEnabled: false
+        });
+      });
     </script>
   </body>
 </html>
