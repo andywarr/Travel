@@ -2062,11 +2062,24 @@
       });
 
       require(["svg-pan-zoom"], function(svgPanZoom) {
-        svgPanZoom('#svg', {
+        let spz = svgPanZoom('#svg', {
           zoomEnabled: true,
           controlIconsEnabled: false
         });
+
+        document.addEventListener("keyup", function(event) {
+          event.preventDefault();
+          // + key
+          if (event.which === 187) {
+            spz.zoomIn();
+          } 
+          // - key
+          else if (event.which === 189) {
+            spz.zoomOut();
+          }
+        });
       });
+
     </script>
   </body>
 </html>
