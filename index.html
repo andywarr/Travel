@@ -2099,7 +2099,7 @@
       var score = 0;
       var guesses = 0;
 
-      function toggleCountry(e) {
+      function handleCountryClick(e) {
         let node = e.target;
 
         if (gameMode) {
@@ -2160,7 +2160,7 @@
         document.getElementById('svg').childNodes.forEach(node => {
           if (node.tagName === "path") {
             all_countries.push(node);
-            node.addEventListener('click', toggleCountry);
+            node.addEventListener('click', handleCountryClick);
           }
         });
 
@@ -2196,35 +2196,29 @@
             }
           });
 
-          let plus = document.getElementById("plus");
-          plus.addEventListener("click", function(event) {
+          document.getElementById("plus").addEventListener("click", function(event) {
             event.preventDefault();
             spz.zoomIn();
           });
 
-          let minus = document.getElementById("minus");
-          minus.addEventListener("click", function(event) {
+          document.getElementById("minus").addEventListener("click", function(event) {
             event.preventDefault();
             spz.zoomOut();
           });
         });
 
-        let game = document.getElementById("game");
-        game.addEventListener("click", function(event) {
+        document.getElementById("game").addEventListener("click", function(event) {
           event.preventDefault();
           if (gameMode) {
-            gameMode = false;
-            score = 0;
-            document.getElementById("gameMode_rect").style.fill='#FFFFFF';
-            highlightCountries();
-            updateInfo();
-            all_countries.forEach(function(country) {
-              country._tippy.enable();
-            });
+            resetGame();
           } else {
             initGame();
           }
         });
+
+        if (window.location.hash.substring(1) === 'game') {
+          initGame();
+        }
       }
 
       function initGame() {
@@ -2244,6 +2238,21 @@
         });
 
         playGame();
+      }
+
+      function resetGame() {
+        gameMode = false;
+        score = 0;
+        guesses = 0;
+        
+        document.getElementById("gameMode_rect").style.fill='#FFFFFF';
+        
+        highlightCountries();
+        updateInfo();
+        
+        all_countries.forEach(function(country) {
+          country._tippy.enable();
+        });
       }
 
       function playGame() {
