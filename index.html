@@ -2153,7 +2153,7 @@
       }
 
       function init() {
-        countries = JSON.parse(localStorage.getItem('countries'));
+        countries = JSON.parse(localStorage.getItem('countries')) || [];
 
         highlightCountries();
 
