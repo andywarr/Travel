@@ -10,11 +10,18 @@
       }
 
       #container {
+        height: 100vh;
+        overflow: hidden;
         position: relative;
       }
 
       .correct {
         fill: #4CAF50 !important;
+      }
+
+      .country {
+        fill:#757575;
+        fill-rule:evenodd
       }
 
       .incorrect {
@@ -28,9 +35,17 @@
         text-align: center;
       }
 
-      .country {
-        fill:#757575;
-        fill-rule:evenodd
+      #footer {
+        bottom: 0;
+        height: 100px !important;
+      }
+
+      #footer, #toolbar {
+        display: block;
+        height: 50px;
+        position: fixed;
+        width: 100%;
+        z-index: 100;
       }
 
       path {
@@ -45,12 +60,6 @@
         width: 50px;
       }
 
-      #toolbar {
-        display: block;
-        height: 50px;
-        position: relative;
-      }
-
       #tools {
         display: block;
         position: absolute;
@@ -58,8 +67,8 @@
       }
 
       svg {
-        height: auto;
-        width: 100%;
+        height: 100%;
+        width: auto;
       }
 
       .visited {
@@ -68,8 +77,9 @@
 
       .zoomControl {
         cursor: pointer;
-        display: block;
+        display: inline-block;
         height: 50px;
+        margin: 0;
         position: relative;
         width: 50px;
       }
@@ -77,10 +87,10 @@
       .zoomControls {
         bottom: 0;
         display: block;
-        height: 100px;
+        height: 50px;
         position: absolute;
         right: 0;
-        width: 50px;
+        width: 105px;
       }
     </style>
   </head>
@@ -2070,6 +2080,10 @@
          d="m 879.6,395.2 -0.2,-0.2 -0.7,0.5 -0.6,0 0.1,0.2 0.1,0.2 0.7,0.4 0.6,-1.1 z m 13.5,-2.1 0,-0.1 -0.1,0 -0.1,0.1 -1.3,-0.1 -0.2,0.6 -0.5,0.4 0,0.7 0.5,0.7 0.3,0.1 0.5,0.1 0.7,-0.4 0.2,-0.4 0.1,-0.8 -0.1,-0.4 0,-0.5 z m -9.7,0.8 0.5,-0.4 0,-0.2 -0.1,-0.3 -0.5,-0.3 -0.2,0 -0.2,0.2 -0.2,0.4 0.3,0.5 0.2,0.1 0.2,0 z m 4.7,-2.3 1.2,-1 0,-0.3 -1,0.1 -1.1,1 -0.3,0.1 -1,0.1 -0.5,0 -0.4,0.2 0.2,0.3 0.4,1 0.7,0.9 0.6,-0.2 0.3,-0.2 0.4,-0.6 0.5,-1.4 z m 11.6,1.3 1.5,-0.5 0.3,-1 0.3,-1.1 0,-0.7 -0.2,-0.3 -0.1,0 -0.4,0 -0.3,0.2 -0.1,0.6 -0.7,1.3 -0.5,1.2 -0.7,0.6 -0.7,0.2 0.1,0.1 0.7,0.1 0.8,-0.7 z m -19.7,-2 0.5,-0.5 0.1,-0.3 -0.1,-0.5 0.2,-0.2 -0.1,-0.4 -0.3,-0.4 -0.7,0 -0.4,0.6 0.6,1.2 0.1,0.5 0.1,0 z m 22.4,-2.7 0.9,-0.3 0.5,-0.3 0.1,-0.9 0.2,-0.3 -0.2,-0.3 -0.2,0.2 -0.2,0.4 -0.6,0.2 -0.8,0.4 -0.2,0.3 -0.2,0.9 0.4,0.1 0.3,-0.4 z"
          />
       </svg>
+    </div>
+    <div id="footer">
+      <div id="info"></div>
+      <div id="score"></div>
       <div class="zoomControls">
         <div id="plus" class="zoomControl">
           <svg width="50" height="50" viewBox="-25 -25 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2085,8 +2099,6 @@
         </div>
       </div>
     </div>
-    <div id="info"></div>
-    <div id="score"></div>
     <script src="https://unpkg.com/popper.js@1"></script>
     <script src="https://unpkg.com/tippy.js@4"></script>
     <script data-main="require-main" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.16/require.js"></script>
