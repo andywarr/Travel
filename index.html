@@ -2268,7 +2268,15 @@
       }
 
       function playGame() {
-        countryName = all_countries[getRandomIntInclusive(0, all_countries.length)].dataset.name;
+        country = all_countries[getRandomIntInclusive(0, all_countries.length)];
+
+        // If the country is too small, select another country
+        if (country.getTotalLength() < 25) {
+          playGame();
+        }
+
+        countryName = country.dataset.name;
+
         updateInfo();
       }
 
