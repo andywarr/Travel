@@ -2107,219 +2107,221 @@
     <script src="https://unpkg.com/tippy.js@4"></script>
     <script data-main="require-main" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.16/require.js"></script>
     <script type="text/javascript">
-      var all_countries = [];
-      var countries = [];
+      let World = {
+        all_countries: [],
+        visited_countries: [],
 
-      var gameMode = false;
-      var countryName = "";
-      var score = 0;
-      var guesses = 0;
+        gameMode: false,
+        countryName: "",
+        score: 0,
+        guesses: 0,
 
-      function handleCountryClick(e) {
-        let node = e.target;
+        init: function() {
+          this.getAllCountries();
+          this.visited_countries = this.getVisitedCountries();
+          this.highlightVisitedCountries();
+          this.updateVisitiedCountryCount();
 
-        if (gameMode) {
-          guesses++;
-          if (node.dataset.name === countryName) {
-            score++;
-            
-          }
-          showAnswer(node.dataset.name);
-        } else {
-          if (countries.filter(country => country.id === node.id).length > 0) {
-            node.setAttribute('class', "country");
-            countries = removeCountry(node.id);
-          } else {
-            node.setAttribute('class', node.getAttribute('class') + " visited");
-            countries = addCountry(node.id);
-          }
-
-          saveCountries();
-          updateInfo();
-        }
-      };
-
-      function addCountry(countryCode) {
-        return [...countries, {id: countryCode}];
-      }
-
-      function removeCountry(countryCode) {
-        return countries.filter(country => country.id !== countryCode);
-      }
-
-      function saveCountries() {
-        localStorage.setItem('countries', JSON.stringify(countries));
-      }
-
-      function updateInfo() {
-        if (gameMode) {
-          document.getElementById('info').innerHTML = `Where is ${countryName}?`;
-          document.getElementById('score').innerHTML = `${score} out of ${guesses} correct`;
-        } else {
-          document.getElementById('info').innerHTML = `You have visited ${countries.length} countries`;
-          document.getElementById('score').innerHTML = ``;
-        }
-      }
-
-      function highlightCountries() {
-        countries.forEach(country => {
-          let el = document.getElementById(country.id);
-          el.setAttribute('class', el.getAttribute('class') + " visited");
-        });
-      }
-
-      function init() {
-        countries = JSON.parse(localStorage.getItem('countries')) || [];
-
-        highlightCountries();
-
-        document.getElementById('svg').childNodes.forEach(node => {
-          if (node.tagName === "path") {
-            all_countries.push(node);
-            node.addEventListener('click', handleCountryClick);
-          }
-        });
-
-        tippy('.country', {
-          arrow: true,
-          delay: 100,
-          followCursor: true
-        });
-
-        updateInfo();
-
-        require.config({
-          paths: {
-            'svg-pan-zoom': './dist/svg-pan-zoom'
-          }
-        });
-
-        require(["svg-pan-zoom"], function(svgPanZoom) {
-          let spz = svgPanZoom('#svg', {
-            zoomEnabled: true,
-            controlIconsEnabled: false
+          tippy('.country', {
+            arrow: true,
+            delay: 100,
+            followCursor: true
           });
 
-          document.addEventListener("keyup", function(event) {
-            event.preventDefault();
-            // + key
-            if (event.which === 187) {
+          require.config({
+            paths: {
+              'svg-pan-zoom': './dist/svg-pan-zoom'
+            }
+          });
+
+          require(["svg-pan-zoom"], function(svgPanZoom) {
+            let spz = svgPanZoom('#svg', {
+              zoomEnabled: true,
+              controlIconsEnabled: false
+            });
+
+            document.addEventListener("keyup", function(event) {
+              event.preventDefault();
+              // + key
+              if (event.which === 187) {
+                spz.zoomIn();
+              } 
+              // - key
+              else if (event.which === 189) {
+                spz.zoomOut();
+              }
+            });
+
+            document.getElementById("plus").addEventListener("click", function(event) {
+              event.preventDefault();
               spz.zoomIn();
-            } 
-            // - key
-            else if (event.which === 189) {
+            });
+
+            document.getElementById("minus").addEventListener("click", function(event) {
+              event.preventDefault();
               spz.zoomOut();
-            }
+            });
           });
 
-          document.getElementById("plus").addEventListener("click", function(event) {
+          document.getElementById("game").addEventListener("click", function(event) {
             event.preventDefault();
-            spz.zoomIn();
-          });
-
-          document.getElementById("minus").addEventListener("click", function(event) {
-            event.preventDefault();
-            spz.zoomOut();
-          });
-        });
-
-        document.getElementById("game").addEventListener("click", function(event) {
-          event.preventDefault();
-          if (gameMode) {
-            resetGame();
-          } else {
-            initGame();
-          }
-        });
-
-        if (window.location.hash.substring(1) === 'game') {
-          initGame();
-        }
-      }
-
-      function initGame() {
-        gameMode = true;
-
-        document.getElementById("gameMode_rect").style.fill='#D50000';
-
-        all_countries.forEach(function(country) {
-          country.setAttribute('class', "country");
-          country._tippy.disable();
-        });
-
-        tippy('.country', {
-          arrow: true,
-          delay: 100,
-          followCursor: true
-        });
-
-        playGame();
-      }
-
-      function resetGame() {
-        gameMode = false;
-        score = 0;
-        guesses = 0;
-        
-        document.getElementById("gameMode_rect").style.fill='#FFFFFF';
-        
-        highlightCountries();
-        updateInfo();
-        
-        all_countries.forEach(function(country) {
-          country._tippy.enable();
-        });
-      }
-
-      function playGame() {
-        country = all_countries[getRandomIntInclusive(0, all_countries.length)];
-
-        // If the country is too small, select another country
-        if (country.getTotalLength() < 25) {
-          playGame();
-        }
-
-        countryName = country.dataset.name;
-
-        updateInfo();
-      }
-
-      function showAnswer(selectedCountry) {
-        if (selectedCountry === countryName) {
-          all_countries.forEach(function(country) {
-            if (country.dataset.name === selectedCountry) {
-              country.setAttribute('class', "country correct");
+            if (this.gameMode) {
+              this.stopGame();
+            } else {
+              this.startGame();
             }
-          });
-        } else {
-          all_countries.forEach(function(country) {
-            if (country.dataset.name === selectedCountry) {
-              country.setAttribute('class', "country incorrect");
-            }
+          }.bind(this));
+        },
 
-            if (country.dataset.name === countryName) {
-              country.setAttribute('class', "country correct");
-            }
-          });
-        }
+        startGame: function() {
+          this.gameMode = true;
 
-        window.setTimeout(function() {
-          all_countries.forEach(function(country) {
+          document.getElementById("gameMode_rect").style.fill='#D50000';
+
+          this.all_countries.forEach(function(country) {
             country.setAttribute('class', "country");
+            country._tippy.disable();
           });
 
-          playGame();
-        }, 2000);
+          this.playGame();
+        },
+
+        playGame: function() {
+          let country = this.all_countries[this.getRandomIntInclusive(0, this.all_countries.length)];
+
+          // If the country is too small, select another country
+          if (country.getTotalLength() < 25) {
+            this.playGame();
+          }
+
+          this.countryName = country.dataset.name;
+
+          this.updateVisitiedCountryCount();
+        },
+
+        getRandomIntInclusive: function(min, max) {
+          min = Math.ceil(min);
+          max = Math.floor(max);
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        },
+
+        showAnswer(selectedCountry) {
+          if (selectedCountry === this.countryName) {
+            this.all_countries.forEach(function(country) {
+              if (country.dataset.name === selectedCountry) {
+                country.setAttribute('class', "country correct");
+              }
+            });
+          } else {
+            this.all_countries.forEach(function(country) {
+              if (country.dataset.name === selectedCountry) {
+                country.setAttribute('class', "country incorrect");
+              }
+
+              if (country.dataset.name === this.countryName) {
+                country.setAttribute('class', "country correct");
+              }
+            });
+          }
+
+          window.setTimeout(function() {
+            this.all_countries.forEach(function(country) {
+              country.setAttribute('class', "country");
+            });
+
+            this.playGame();
+          }.bind(this), 2000);
+        },
+
+        stopGame: function() {
+          this.gameMode = false;
+          this.score = 0;
+          this.guesses = 0;
+          
+          document.getElementById("gameMode_rect").style.fill='#FFFFFF';
+          
+          this.highlightVisitedCountries();
+          this.updateVisitiedCountryCount();
+          
+          this.all_countries.forEach(function(country) {
+            country._tippy.enable();
+          });
+        },
+
+        getAllCountries: function() {
+          document.getElementById('svg').childNodes.forEach(node => {
+            if (node.tagName === "path") {
+              this.all_countries.push(node);
+              node.addEventListener('click', this.handleCountryClick.bind(this));
+            }
+          });
+        },
+
+        handleCountryClick: function(e) {
+          let node = e.target;
+
+          if (this.gameMode) {
+            this.guesses++;
+            if (node.dataset.name === this.countryName) {
+              this.score++;
+              
+            }
+            this.showAnswer(node.dataset.name);
+          } else {
+            if (this.visited_countries.filter(country => country.id === node.id).length > 0) {
+              node.setAttribute('class', "country");
+              this.visited_countries = this.removeVisitedCountry(node.id);
+            } else {
+              node.setAttribute('class', node.getAttribute('class') + " visited");
+              this.visited_countries = this.addVisitedCountry(node.id);
+            }
+
+            this.removeVisitedCountry(node.id);
+            this.updateVisitiedCountryCount();
+          }
+        },
+
+        addVisitedCountry: function(countryCode) {
+          return [...countries, {id: countryCode}];
+        },
+
+        getVisitedCountries: function() {
+          return JSON.parse(localStorage.getItem('countries')) || [];
+        },
+
+        highlightVisitedCountries: function() {
+          this.visited_countries.forEach(country => {
+            let el = document.getElementById(country.id);
+            el.setAttribute('class', el.getAttribute('class') + " visited");
+          });
+        },
+
+        removeVisitedCountry: function(countryCode) {
+          return this.visited_countries.filter(country => country.id !== countryCode);
+        },
+
+        saveVisitedCountries: function() {
+          localStorage.setItem('countries', JSON.stringify(this.visited_countries));
+        },
+
+        updateVisitiedCountryCount: function() {
+          if (this.gameMode) {
+            document.getElementById('info').innerHTML = `Where is ${this.countryName}?`;
+            document.getElementById('score').innerHTML = `${this.score} out of ${this.guesses} correct`;
+          } else {
+            document.getElementById('info').innerHTML = `You have visited ${this.visited_countries.length} countries`;
+            document.getElementById('score').innerHTML = ``;
+          }
+        }
       }
 
-      function getRandomIntInclusive(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+      let world = Object.create(World);
+      if (window.location.hash.substring(1) === 'game') {
+        world.startGame();
+      } else {
+        world.init();
       }
-
-      init();
-
+      
     </script>
   </body>
 </html>
