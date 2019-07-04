@@ -2214,6 +2214,7 @@
             });
           } else {
             this.all_countries.forEach(function(country) {
+              console.log(country.dataset.name, selectedCountry, this.countryName);
               if (country.dataset.name === selectedCountry) {
                 country.setAttribute('class', "country incorrect");
               }
@@ -2221,7 +2222,7 @@
               if (country.dataset.name === this.countryName) {
                 country.setAttribute('class', "country correct");
               }
-            });
+            }.bind(this));
           }
 
           window.setTimeout(function() {
