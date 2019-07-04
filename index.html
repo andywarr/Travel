@@ -2317,6 +2317,7 @@
 
       let world = Object.create(World);
       if (window.location.hash.substring(1) === 'game') {
+        world.init();
         world.startGame();
       } else {
         world.init();
